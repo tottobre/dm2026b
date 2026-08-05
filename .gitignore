@@ -1,6 +1,7 @@
 #Archivos que considero datasets grandes, lastima que git no lo permita nativamente
 *.csv
 *.csv.gz
+exp/
 
 
 # Windows image file caches
@@ -55,6 +56,7 @@ Temporary Items
 *_files/
 __pycache__/
 !README.md
+!AGENTS.md
 *.ipynb_checkpoints/
 
 *copia.ipynb
