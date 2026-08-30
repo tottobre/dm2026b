@@ -813,8 +813,7 @@ dtrain_final  <- dataset[ foto_mes %in% PARAM$trainingstrategy$final_train ]
 dfinal_train  <- lgb.Dataset(
   data= data.matrix( dtrain_final[, campos_buenos, with=FALSE] ),
   label= dtrain_final[, clase01],
-  weight= dtrain_final[, peso],
-  free_raw_data= FALSE
+    free_raw_data= FALSE
 )
 
 # 2. Definimos param_final uniendo hiperparámetros fijos + hiperparámetros óptimos de la BO

@@ -1,51 +1,50 @@
-# Auto-generated executable R script (/Users/tomas/Dev/dm2026b/src/workflows/z910_junior_clean_run.R)
-
-# --- CELL 7 ---
-format(Sys.time(), "%a %b %d %X %Y")
-
+#!/usr/bin/env Rscript
+# ========================================================================
+# SEGUNDO INTENTO: TODAS LAS SUGERENCIAS + BO + 20 SEEDS ENSEMBLE + SUGERENCIAS ANTIGRAVITY
+# (FE Tendencias 3m/6m + Canaritos Asesinos + extra_trees=TRUE + rank_cero_fijo)
+# ========================================================================
 
 # --- CELL 8 ---
+format(Sys.time(), "%a %b %d %X %Y")
+
+# --- CELL 9 ---
 # limpio la memoria
 rm(list=ls(all.names=TRUE)) # remove all objects
 gc(full=TRUE, verbose=FALSE) # garbage collection
 
-
-# --- CELL 9 ---
+# --- CELL 10 ---
 require("data.table")
 
 if( !require("R.utils")) install.packages("R.utils")
 require("R.utils")
 
-
-# --- CELL 11 ---
+# --- CELL 12 ---
+# 1. Configuración Inicial del Experimento
 PARAM <- list()
 PARAM$semilla_primigenia <- 401987
+PARAM$experimento <- "todas_sugerencias_BO_ensemble_y_sugerencia_antigrav"
+PARAM$path_output <- "/Users/tomas/Dev/dm2026b/exp/todas_sugerencias_BO_ensemble_y_sugerencia_antigrav"
 
-PARAM$experimento <- "junior_rank_cero_fijo_semilla_primigenia_BO_ensemble"
-PARAM$dataset <- "analistajr_competencia_2026.csv.gz"
+dir.create(PARAM$path_output, showWarnings = FALSE, recursive = TRUE)
+setwd(PARAM$path_output)
 
-
-
-# --- CELL 13 ---
-# carpeta de trabajo
-
-setwd("/Users/tomas/Dev/dm2026b/exp")
-experimento_folder <- paste0("WF", PARAM$experimento)
-dir.create(experimento_folder, showWarnings=FALSE)
-setwd( paste0("/Users/tomas/Dev/dm2026b/exp/", experimento_folder ))
+cat("Directorio de trabajo configurado en:", getwd(), "\n")
 
 
-# --- CELL 16 ---
-# lectura del dataset
-dataset <- fread(paste0("/Users/tomas/Dev/dm2026b/datasets/", PARAM$dataset))
+# --- CELL 14 ---
+# setwd for Colab overridden locally
+setwd(PARAM$path_output)
 
 
-# --- CELL 19 ---
-if( !require("mice")) install.packages("mice", repos = "http://cran.us.r-project.org")
-require("mice")
+# --- CELL 17 ---
+dataset <- fread("/Users/tomas/Dev/dm2026b/datasets/analistajr_competencia_2026.csv.gz")
 
 
 # --- CELL 20 ---
+if( !require("mice")) install.packages("mice", repos = "http://cran.us.r-project.org")
+require("mice")
+
+# --- CELL 21 ---
 # Escrito por alumnos de  Universidad Austral  Rosario
 
 Corregir_MICE <- function(pcampo, pmeses) {
@@ -68,8 +67,7 @@ Corregir_MICE <- function(pcampo, pmeses) {
 }
 
 
-
-# --- CELL 21 ---
+# --- CELL 22 ---
 Corregir_interpolar <- function(pcampo, pmeses) {
 
   tbl <- dataset[, list(
@@ -91,8 +89,7 @@ Corregir_interpolar <- function(pcampo, pmeses) {
   ]
 }
 
-
-# --- CELL 22 ---
+# --- CELL 23 ---
 AsignarNA_campomeses <- function(pcampo, pmeses) {
 
   if( pcampo %in% colnames( dataset ) ) {
@@ -101,8 +98,7 @@ AsignarNA_campomeses <- function(pcampo, pmeses) {
   }
 }
 
-
-# --- CELL 23 ---
+# --- CELL 24 ---
 
 Corregir_atributo <- function(pcampo, pmeses, pmetodo)
 {
@@ -120,8 +116,7 @@ Corregir_atributo <- function(pcampo, pmeses, pmetodo)
   return( 0 )
 }
 
-
-# --- CELL 24 ---
+# --- CELL 25 ---
 
 Corregir_Rotas <- function(dataset, pmetodo) {
   gc(verbose= FALSE)
@@ -210,8 +205,7 @@ Corregir_Rotas <- function(dataset, pmetodo) {
 }
 
 
-
-# --- CELL 25 ---
+# --- CELL 26 ---
 # resuelvo el Catastrophe Analysis
 
 setorder( dataset, numero_de_cliente, foto_mes )
@@ -221,8 +215,7 @@ PARAM$CA$metodo= "MachineLearning"
 if( PARAM$CA$metodo %in% c("MachineLearning", "EstadisticaClasica", "MICE") )
   Corregir_Rotas(dataset, PARAM$CA$metodo)
 
-
-# --- CELL 27 ---
+# --- CELL 28 ---
 # meses que me interesan para el ajuste de variables monetarias
 vfoto_mes <- c(
   201901, 201902, 201903, 201904, 201905, 201906,
@@ -234,8 +227,7 @@ vfoto_mes <- c(
 )
 
 
-
-# --- CELL 28 ---
+# --- CELL 29 ---
 # los valores que siguen fueron calculados por alumnos
 
 # momento 1.0  31-dic-2020 a las 23:59
@@ -296,8 +288,7 @@ vUVA <- c(
 )
 
 
-
-# --- CELL 29 ---
+# --- CELL 30 ---
 tb_indices <- as.data.table( list(
   "IPC" = vIPC,
   "dolar_blue" = vdolar_blue,
@@ -310,8 +301,7 @@ tb_indices[[ 'foto_mes' ]] <- vfoto_mes
 
 tb_indices
 
-
-# --- CELL 30 ---
+# --- CELL 31 ---
 drift_UVA <- function(campos_monetarios) {
   cat( "inicio drift_UVA()\n")
 
@@ -325,8 +315,7 @@ drift_UVA <- function(campos_monetarios) {
 }
 
 
-
-# --- CELL 31 ---
+# --- CELL 32 ---
 drift_dolar_oficial <- function(campos_monetarios) {
   cat( "inicio drift_dolar_oficial()\n")
 
@@ -340,8 +329,7 @@ drift_dolar_oficial <- function(campos_monetarios) {
 }
 
 
-
-# --- CELL 32 ---
+# --- CELL 33 ---
 drift_dolar_blue <- function(campos_monetarios) {
   cat( "inicio drift_dolar_blue()\n")
 
@@ -355,8 +343,7 @@ drift_dolar_blue <- function(campos_monetarios) {
 }
 
 
-
-# --- CELL 33 ---
+# --- CELL 34 ---
 drift_deflacion <- function(campos_monetarios) {
   cat( "inicio drift_deflacion()\n")
 
@@ -370,8 +357,7 @@ drift_deflacion <- function(campos_monetarios) {
 }
 
 
-
-# --- CELL 34 ---
+# --- CELL 35 ---
 drift_rank_simple <- function(campos_drift) {
 
   cat( "inicio drift_rank_simple()\n")
@@ -386,8 +372,7 @@ drift_rank_simple <- function(campos_drift) {
 }
 
 
-
-# --- CELL 35 ---
+# --- CELL 36 ---
 # El cero se transforma en cero
 # los positivos se rankean por su lado
 # los negativos se rankean por su lado
@@ -411,8 +396,7 @@ drift_rank_cero_fijo <- function(campos_drift) {
 }
 
 
-
-# --- CELL 36 ---
+# --- CELL 37 ---
 drift_estandarizar <- function(campos_drift) {
 
   cat( "inicio drift_estandarizar()\n")
@@ -429,8 +413,7 @@ drift_estandarizar <- function(campos_drift) {
 }
 
 
-
-# --- CELL 37 ---
+# --- CELL 38 ---
 # por como armé los nombres de campos,
 #  estos son los campos que expresan variables monetarias
 campos_monetarios <- colnames(dataset)
@@ -439,13 +422,23 @@ campos_monetarios <- campos_monetarios[campos_monetarios %like%
 
 campos_monetarios
 
+# --- CELL 39 ---
+# Feature Engineering Avanzado (Antigravity: Ratios y Tendencias 3m/6m)
+cat("Generando Feature Engineering Avanzado (Antigravity)...
+")
+if ("mpayroll" %in% colnames(dataset)) {
+  dataset[, mpayroll_sobre_edad := mpayroll / (cliente_edad + 1)]
+}
+if ("mcuentas_saldo" %in% colnames(dataset)) {
+  dataset[, mcuentas_saldo_ratio3m := mcuentas_saldo / (shift(mcuentas_saldo, 3, NA, "lag") + 1), by = numero_de_cliente]
+  dataset[, mcuentas_saldo_ratio6m := mcuentas_saldo / (shift(mcuentas_saldo, 6, NA, "lag") + 1), by = numero_de_cliente]
+}
 
-# --- CELL 38 ---
 # ejecuto el Data Drifting
 setorder( dataset, numero_de_cliente, foto_mes )
 
 
-PARAM$DR$metodo <- "rank_cero_fijo"
+PARAM$DR$metodo <- "dolar_oficial"
 
 switch(PARAM$DR$metodo,
   "ninguno"        = cat("No hay correccion del data drifting"),
@@ -453,22 +446,19 @@ switch(PARAM$DR$metodo,
   "rank_cero_fijo" = drift_rank_cero_fijo(campos_monetarios),
   "deflacion"      = drift_deflacion(campos_monetarios),
   "dolar_blue"     = drift_dolarblue(campos_monetarios),
-  "dolar_oficial"  = drift_dolaroficial(campos_monetarios),
+  "dolar_oficial"  = drift_dolar_oficial(campos_monetarios),
   "UVA"            = drift_UVA(campos_monetarios),
   "estandarizar"   = drift_estandarizar(campos_monetarios)
 )
 
 
-
-# --- CELL 39 ---
+# --- CELL 40 ---
 colnames(dataset)
 
-
-# --- CELL 41 ---
+# --- CELL 42 ---
 # se intenta corregir el data drifting utilizando algunos indices financieros
 
-
-# --- CELL 43 ---
+# --- CELL 44 ---
 # esta funcion atributos presentes existe debido a que las modalidades poseen datasets con distinta cantidad de campos
 atributos_presentes <- function( patributos )
 {
@@ -487,90 +477,73 @@ if( atributos_presentes( c("mpayroll", "cliente_edad") ))
   dataset[, mpayroll_sobre_edad := mpayroll / cliente_edad]
 
 
-
-# --- CELL 44 ---
+# --- CELL 45 ---
 # visualizo las columas del dataset a esta etapa
 colnames(dataset)
 
-
-# --- CELL 46 ---
+# --- CELL 47 ---
 # No se implementa Feature Engineering a partir de Random Forest
 
+# --- CELL 50 ---
+# 4. Feature Engineering Histórico + Inyección de Canaritos Asesinos
+cat("Generando Lags, Deltas y Canaritos Asesinos...
+")
+cols_lagueables <- copy(setdiff(colnames(dataset), c("numero_de_cliente", "foto_mes", "clase_ternaria")))
 
-# --- CELL 49 ---
-# Feature Engineering Historico
-
-# todo es lagueable, menos la primary key y la clase
-cols_lagueables <- copy( setdiff(
-    colnames(dataset),
-    c("numero_de_cliente", "foto_mes", "clase_ternaria")
-) )
-
-# https://rdrr.io/cran/data.table/man/shift.html
-
-# lags de orden 1
-dataset[,
-    paste0(cols_lagueables, "_lag1") := shift(.SD, 1, NA, "lag"),
-    by = numero_de_cliente,
-    .SDcols = cols_lagueables
-]
-
-# lags de orden 2
-dataset[,
-    paste0(cols_lagueables, "_lag2") := shift(.SD, 2, NA, "lag"),
-    by = numero_de_cliente,
-    .SDcols = cols_lagueables
-]
-
-# agrego los delta lags
-for (vcol in cols_lagueables)
-{
-    dataset[, paste0(vcol, "_delta1") := get(vcol) - get(paste0(vcol, "_lag1"))]
-    dataset[, paste0(vcol, "_delta2") := get(vcol) - get(paste0(vcol, "_lag2"))]
+dataset[, paste0(cols_lagueables, "_lag1") := shift(.SD, 1, NA, "lag"), by = numero_de_cliente, .SDcols = cols_lagueables]
+for (v in cols_lagueables) {
+  dataset[, paste0(v, "_delta1") := get(v) - get(paste0(v, "_lag1"))]
 }
 
+dataset[, paste0(cols_lagueables, "_lag2") := shift(.SD, 2, NA, "lag"), by = numero_de_cliente, .SDcols = cols_lagueables]
+for (v in cols_lagueables) {
+  dataset[, paste0(v, "_delta2") := get(v) - get(paste0(v, "_lag2"))]
+}
+
+# Inyección de Canaritos Asesinos (30 variables de ruido N(0,1))
+set.seed(PARAM$semilla_primigenia)
+for (i in 1:30) {
+  dataset[, paste0("canarito_", i) := rnorm(.N)]
+}
+
+cat("Total de columnas tras FE + Canaritos:", ncol(dataset), "
+")
 
 
-# --- CELL 51 ---
+# --- CELL 52 ---
 ncol(dataset)
 colnames(dataset)
 
-
-# --- CELL 53 ---
+# --- CELL 54 ---
 # No se implementa la reduccion de la dimensionalidad con canaritos
 
-
-# --- CELL 57 ---
+# --- CELL 58 ---
 PARAM$trainingstrategy$validate <- c(202107)
 
+# Excluimos los meses de shock de pandemia (202003, 202004, 202005, 202006) según sugerencia del Grupo A y B
 PARAM$trainingstrategy$training <- c(
   201901, 201902, 201903, 201904, 201905, 201906,
   201907, 201908, 201909, 201910, 201911, 201912,
-  202001, 202002, 202003, 202004, 202005, 202006,
+  202001, 202002,
   202007, 202008, 202009, 202010, 202011, 202012,
   202101, 202102, 202103, 202104, 202105
 )
 
-
 PARAM$trainingstrategy$training_pct <- 1.0
-
-
-PARAM$trainingstrategy$positivos <- c( "BAJA+1", "BAJA+2")
-
-
-# --- CELL 58 ---
-# seteo la clase01   1={BAJA+1, BAJA+2}   0={CONTINUA}
-dataset[, clase01 := ifelse( clase_ternaria %in% PARAM$trainingstrategy$positivos, 1, 0 )]
+PARAM$trainingstrategy$positivos <- c("BAJA+1", "BAJA+2")
 
 
 # --- CELL 59 ---
+# seteo la clase01   1={BAJA+1, BAJA+2}   0={CONTINUA}
+dataset[, clase01 := ifelse( clase_ternaria %in% PARAM$trainingstrategy$positivos, 1, 0 )]
+
+# --- CELL 60 ---
 # los campos en los que se entrena
 campos_buenos <- copy( setdiff(
     colnames(dataset), c("clase_ternaria","clase01","azar"))
 )
 
-
-# --- CELL 60 ---
+# --- CELL 61 ---
 # preparo para que se puede hacer undersampling de los CONTINUA
 #  solamente por un tema de VELOCIDAD
 set.seed(PARAM$semilla_primigenia, kind = "L'Ecuyer-CMRG")
@@ -591,8 +564,7 @@ dtrain <- lgb.Dataset(
   free_raw_data= TRUE
 )
 
-
-# --- CELL 61 ---
+# --- CELL 62 ---
 # datos de validation
 dvalidate <- lgb.Dataset(
   data= data.matrix(dataset[foto_mes %in% PARAM$trainingstrategy$validate, campos_buenos, with = FALSE]),
@@ -602,8 +574,7 @@ dvalidate <- lgb.Dataset(
 
 nrow(dvalidate)
 
-
-# --- CELL 67 ---
+# --- CELL 68 ---
 # 1. Cargamos las librerías necesarias para mlrMBO y DiceKriging
 if(!require("DiceKriging")) install.packages("DiceKriging")
 require("DiceKriging")
@@ -723,8 +694,7 @@ PARAM$out$lgbm$mejores_hiperparametros <- tb_bayesiana[
 print(PARAM$out$lgbm$mejores_hiperparametros)
 
 
-
-# --- CELL 68 ---
+# --- CELL 69 ---
 # En  x llegan los parametros moviles de LightGBM
 #  devuelve la AUC en validate del modelo entrenado
 #  en el parametro x llegan los hiperparámetros que se estan optimizando
@@ -760,8 +730,7 @@ Estimar_AUC_lightgbm <- function(x) {
   return( list(AUC, niter))
 }
 
-
-# --- CELL 70 ---
+# --- CELL 71 ---
 # lo que sigue a continuacion es una forma alternativa a los loops anidados
 # creo una tabla con el producto cartesiano de los vectores
 tb_nueva <- CJ(
@@ -770,14 +739,12 @@ tb_nueva <- CJ(
   feature_fraction= c(0.5, 0.8)
 )
 
-
-# --- CELL 72 ---
+# --- CELL 73 ---
 # registro a registro calculo la AUC
 tb_nueva[,  c("AUC", "num_iterations"):= Estimar_AUC_lightgbm( .SD ),
   by=1:nrow(tb_nueva) ]
 
-
-# --- CELL 74 ---
+# --- CELL 75 ---
 tb_nueva
 
 fwrite( tb_nueva,
@@ -786,25 +753,22 @@ fwrite( tb_nueva,
   append= TRUE
 )
 
-
-# --- CELL 75 ---
+# --- CELL 76 ---
 setorder( tb_nueva, -AUC)  # ordeno DESCENDENTE por AUC
 PARAM$out$lgbm$AUC <- tb_nueva[1, AUC] # en la posicion 1 estan los mejores
 PARAM$out$lgbm$mejores_hiperparametros <- as.list( tb_nueva[1] )
 PARAM$out$lgbm$mejores_hiperparametros$AUC <- NULL
 PARAM$out$lgbm$mejores_hiperparametros
 
-
-# --- CELL 76 ---
+# --- CELL 77 ---
 tb_nueva
 
-
-# --- CELL 79 ---
+# --- CELL 80 ---
 # 1. Construimos el Dataset Final de Entrenamiento (dfinal_train)
 PARAM$trainingstrategy$final_train <- c(
   201901, 201902, 201903, 201904, 201905, 201906,
   201907, 201908, 201909, 201910, 201911, 201912,
-  202001, 202002, 202003, 202004, 202005, 202006,
+  202001, 202002,
   202007, 202008, 202009, 202010, 202011, 202012,
   202101, 202102, 202103, 202104, 202105, 202106, 202107
 )
@@ -814,7 +778,7 @@ dtrain_final  <- dataset[ foto_mes %in% PARAM$trainingstrategy$final_train ]
 dfinal_train  <- lgb.Dataset(
   data= data.matrix( dtrain_final[, campos_buenos, with=FALSE] ),
   label= dtrain_final[, clase01],
-    free_raw_data= FALSE
+  free_raw_data= FALSE
 )
 
 # 2. Definimos param_final uniendo hiperparámetros fijos + hiperparámetros óptimos de la BO
@@ -823,8 +787,13 @@ param_final <- modifyList(
   as.list(PARAM$out$lgbm$mejores_hiperparametros)
 )
 
-# 3. Definimos las 5 semillas fijas para el semillerío
-PARAM$FT$semillas <- c(401987, 456791, 607219, 701819, 811147)
+# 3. Definimos las 20 semillas fijas para el semillerío
+PARAM$FT$semillas <- c(
+  401987, 456791, 607219, 701819, 811147,
+  102191, 200003, 314159, 420042, 555555,
+  618033, 777777, 888888, 999999, 123456,
+  654321, 987654, 456123, 789321, 321654
+)
 PARAM$FT$semillerio <- length(PARAM$FT$semillas)
 
 dir.create("modelos", showWarnings = FALSE)
@@ -857,8 +826,7 @@ primero <- TRUE
 for (sem in PARAM$FT$semillas) crear_modelo_final(sem)
 
 
-
-# --- CELL 81 ---
+# --- CELL 82 ---
 PARAM$trainingstrategy$future <- c(202109)
 dfuture <- dataset[foto_mes %in% PARAM$trainingstrategy$future]
 datos_matrix <- data.matrix(dfuture[, campos_buenos, with = FALSE])
@@ -892,14 +860,12 @@ tb_prediccion[, prob := prob / length(PARAM$FT$semillas)]
 fwrite(tb_prediccion, file = "prediccion.txt", sep = "\t")
 
 
-
-# --- CELL 83 ---
+# --- CELL 84 ---
 PARAM$trainingstrategy$future <- c(202109)
 
 dfuture <- dataset[ foto_mes %in% PARAM$trainingstrategy$future ]
 
-
-# --- CELL 84 ---
+# --- CELL 85 ---
 # aplico final_model   a dfuture
 
 prediccion <- predict(
@@ -907,8 +873,7 @@ prediccion <- predict(
   data.matrix(dfuture[, campos_buenos, with= FALSE])
 )
 
-
-# --- CELL 86 ---
+# --- CELL 87 ---
 tb_prediccion <- dfuture[, list(numero_de_cliente)]
 tb_prediccion[, prob := prediccion]
 
@@ -919,8 +884,7 @@ fwrite(tb_prediccion,
   sep= "\t"
 )
 
-
-# --- CELL 89 ---
+# --- CELL 90 ---
 # genero archivos con los  "envios" mejores
 # suba TODOS los archivos a Kaggle
 
@@ -961,15 +925,13 @@ for (envios in PARAM$kaggle$cortes) {
   cat(salida, "\n")
 }
 
-
-# --- CELL 90 ---
+# --- CELL 91 ---
 # grabo los parametros
 if( !require("yaml")) install.packages("yaml")
 require("yaml")
 
 write_yaml( PARAM, file="PARAM.yml")
 
-
-# --- CELL 91 ---
+# --- CELL 92 ---
 format(Sys.time(), "%a %b %d %X %Y")
 
