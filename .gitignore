@@ -185,3 +185,8 @@ project/target
 .worksheet
 
 .vscode/settings.json
+
+
+# Include documentation markdown files
+!docs/*.md
+!docs/**/*.md
