@@ -8,16 +8,16 @@
 
 ## 📌 Resumen de la Solución
 
-El notebook [`z910_WorkFlow_01_junior_BO_Ensemble_Final.ipynb`](./z910_WorkFlow_01_junior_BO_Ensemble_Final.ipynb) constituye la entrega final para la Competencia Inicial Junior 2026B. Integra todas las optimizaciones recomendadas:
+El notebook [`Entrega_Final_Junior.ipynb`](./Entrega_Final_Junior.ipynb) constituye la entrega final oficial para la Competencia Inicial Junior 2026B. Integra todas las optimizaciones validadas:
 
-1. **Corrección de Data Drifting**: `PARAM$DR$metodo <- "rank_cero_fijo"` (Método óptimo validado con $p < 0,01$ en el Test de Wilcoxon).
+1. **Data Drifting**: `PARAM$DR$metodo <- "rank_cero_fijo"` (Método óptimo comprobado con $p < 0,01$ en el Test de Wilcoxon pareado).
 2. **Feature Selection**: Canaritos Asesinos (`ratio = 0.2`, `desvios = 2`).
 3. **Hyperparameter Tuning**: Optimización Bayesiana con `mlrMBO` (40 búsquedas con transformación logarítmica $2^x$).
 4. **Final Training & Ensemble (Seed Averaging)**: Ensamble de **20 semillas** independientes basadas en números primos (`generate_primes`).
-5. **Estrategia de Envíos en Kaggle**: Generación de cortes en `seq(1800, 2400, by=100)` sobre el mes futuro (`202109`), alcanzando el pico de ganancia óptima en **2.000 envíos**.
+5. **Estrategia de Envíos en Kaggle**: Generación de cortes en `seq(1600, 2600, by=100)` sobre el mes futuro (`202109`), centrando la meseta óptima de ganancia en **2.000 envíos**.
 
 ---
 
 ## 📁 Archivo de Entrega
 
-- Notebook Principal: [`src/entregas/entrega_final_junior/z910_WorkFlow_01_junior_BO_Ensemble_Final.ipynb`](./z910_WorkFlow_01_junior_BO_Ensemble_Final.ipynb)
+- Notebook Principal: [`src/entregas/entrega_final_junior/Entrega_Final_Junior.ipynb`](./Entrega_Final_Junior.ipynb)
